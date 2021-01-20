@@ -4,11 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Spaceship</title>
 </head>
 
 <body>
-
+    <div class="container">
+        <!--ship-->
+        <div class="spaceship"></div>
+        <!--information about lives and score-->
+        <section class="infomation">
+            <div class="information__content">Score: <span id="score">0</span></div>
+            <div class="information__content">Lives: <span id="lives">3</span></div>
+        </section>
+        <!--message after end of game-->
+        <section class="modal">
+            <div class="modal__content">
+                <p class="modal__txt">You loost! Try again</p>
+                <button class="modal__button">New game</button>
+            </div>
+        </section>
+    </div>
 </body>
 
 </html>
