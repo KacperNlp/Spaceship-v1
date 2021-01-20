@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+@import "variables";
+
+html {
+  font-size: $fontSize;
+  color: $fontColor;
+  font-family: $fontFamily;
+}
+
+.container {
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  background: $siteBackground;
+}
+
+@import "information";
+@import "modal";
+
+.hidden {
+  display: none;
+}

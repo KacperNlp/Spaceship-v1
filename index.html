@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spaceship</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style/main.min.css">
 </head>
 
 <body>
@@ -12,12 +15,12 @@
         <!--ship-->
         <div class="spaceship"></div>
         <!--information about lives and score-->
-        <section class="infomation">
+        <section class="information">
             <div class="information__content">Score: <span id="score">0</span></div>
             <div class="information__content">Lives: <span id="lives">3</span></div>
         </section>
         <!--message after end of game-->
-        <section class="modal">
+        <section class="modal hidden">
             <div class="modal__content">
                 <p class="modal__txt">You loost! Try again</p>
                 <button class="modal__button">New game</button>
