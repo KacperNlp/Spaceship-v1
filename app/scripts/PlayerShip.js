@@ -1,4 +1,5 @@
 import {BindToHtml} from './BindToHtml.js';
+import {Missile, MISSILE_WIDTH, MISSILE_HEIGHT} from './Missile.js'
 
 const SHIP_ANIMATION_SPEED = 10;
 const SHIP_DISTANCE_FROM_THE_BOTTOM = 20;
@@ -6,13 +7,15 @@ const SHIP_ID = 'spaceship';
 const SHIP_SIZE = 64;
 
 export class PlayerShip extends BindToHtml{
-    constructor() {
+    constructor(container) {
         super();
+        this.gameContainer = container;
         this.ship = this.bindById(SHIP_ID);
         this.typesOfMoves = {
             left:false,
             right:false,
         }
+        this.missiles = [];
         this.#init();
     }
 
@@ -31,13 +34,13 @@ export class PlayerShip extends BindToHtml{
 
     #addEventListeners() {
         this.#startMove();
-        this.#stopMove();
+        this.#stopMoveAndShot();
     }
 
     #shipAnimationByEvent = () => {
         const {left, right} = this.typesOfMoves;
         const currentPositionOfShip = this.#currentPositionOfShip();
-        const {innerWidth} = window;
+        const {innerWidth} = window; 
 
         if(left && currentPositionOfShip > 0){
             this.ship.style.left = `${this.#currentPositionOfShip() - SHIP_ANIMATION_SPEED}px`;
@@ -67,7 +70,7 @@ export class PlayerShip extends BindToHtml{
         })
     }
 
-    #stopMove() {
+    #stopMoveAndShot() {
         window.addEventListener('keyup', ({keyCode}) => {
             switch(keyCode) {
                 case(37):
@@ -77,7 +80,27 @@ export class PlayerShip extends BindToHtml{
                 case(39):
                    this.typesOfMoves.right = false;
                 break;
+
+                case(32):
+                   this.#shot();
+                break;
+
+                case(38):
+                   this.#shot();
+                break;
             }
         })
+    }
+
+    #shot() {
+        const {offsetTop, offsetLeft} = this.ship;
+
+        const posX = offsetLeft + MISSILE_WIDTH/2;
+        const posY = offsetTop - MISSILE_HEIGHT;
+
+        const missile = new Missile(posX, posY);
+
+        this.gameContainer.appendChild(missile.renderMissile())
+        this.missiles.push(missile)
     }
 }
