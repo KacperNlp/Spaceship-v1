@@ -1,4 +1,5 @@
 .spaceship {
+  position: absolute;
   width: $shipSize;
   height: $shipSize;
   background-image: url("../assets/player-ship/player.png");
