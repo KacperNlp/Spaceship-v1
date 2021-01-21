@@ -1,0 +1,71 @@
+.enemy-ship {
+  width: $shipSize;
+  height: $shipSize;
+  background-image: url("../assets/enemies/enemy-small-ship.png");
+  animation: enemyShipMove $shipsAnimationTime steps(5) infinite;
+  transform: rotate(180deg);
+
+  &--explosion {
+    width: $shipSize;
+    height: $shipSize;
+    background-image: url("../assets/red-explosion-small/explosion.png");
+    animation: explosionOfSmallShip $explosionAnimationTimer steps(17) infinite;
+  }
+}
+
+//small ship
+@keyframes enemyShipMove {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: $shipSize * (-5);
+  }
+}
+
+//explosion
+@keyframes explosionOfSmallShip {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: $shipSize * (-17);
+  }
+}
+
+//huge ship
+
+.enemy-ship-huge {
+  width: $hugeShipSize;
+  height: $hugeShipSize;
+  background-image: url("../assets/enemies/enemy-huge-ship.png");
+  animation: hugeEnemyShipMove $shipsAnimationTime steps(8) infinite;
+  transform: rotate(180deg);
+
+  &--explosion {
+    width: $hugeShipSize;
+    height: $hugeShipSize;
+    background-image: url("../assets/red-explosion-huge/explosion.png");
+    animation: explosionOfHugeShip $explosionAnimationTimer steps(17) infinite;
+  }
+}
+
+//small ship
+@keyframes hugeEnemyShipMove {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: $hugeShipSize * (-8);
+  }
+}
+
+//explosion
+@keyframes explosionOfHugeShip {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: $hugeShipSize * (-17);
+  }
+}

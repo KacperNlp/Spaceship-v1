@@ -1,0 +1,21 @@
+.spaceship {
+  width: $shipSize;
+  height: $shipSize;
+  background-image: url("../assets/player-ship/player.png");
+  animation: playerShipMove $shipsAnimationTime steps(8) infinite;
+}
+
+@keyframes playerShipMove {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position-x: $shipSize * (-8);
+  }
+}
+
+.missile {
+  width: $missileWidth;
+  height: $missileHeight;
+  background-image: url("../assets/player-ship/bullet.png");
+}
