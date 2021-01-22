@@ -1,14 +1,17 @@
+const EXPLOSION_ANIMATION_TIMER = 800;
 const NUMBER_OF_PIXELS_PER_MOVE = 1;
 export const PROPORTION_TO_GET_SHIP_TYPE = 5;
 export const TYPES_OF_ENEMIES = {
     small:{
         shipType: 'enemy-ship',
+        explosion: 'enemy-ship--explosion',
         hp: 1,
         animationSpeed: 30,
         size: 64,
     },
     huge:{
         shipType: 'enemy-ship-huge',
+        explosion: 'enemy-ship-huge--explosion',
         hp: 3,
         animationSpeed: 50,
         size: 128,
@@ -16,10 +19,11 @@ export const TYPES_OF_ENEMIES = {
 };
 
 export class Enemy{
-    constructor({shipType, hp, animationSpeed, size}, container){
+    constructor({shipType, explosion, hp, animationSpeed, size}, container){
         this.animationInterval = null;
         this.animationSpeed = animationSpeed;
         this.element = null;
+        this.explosion = explosion;
         this.gameContainer = container;
         this.hp = hp;
         this.posX = null;
@@ -66,6 +70,13 @@ export class Enemy{
     deleteEnemy() {
         this.#stopAnimationMove();
         this.#removeEnemyFromHtml();
+    }
+
+    shipExplosion() {
+        this.element.classList.remove(this.shipType);
+        this.element.classList.add(this.explosion);
+        this.#stopAnimationMove();
+        setTimeout(() => this.#removeEnemyFromHtml(), EXPLOSION_ANIMATION_TIMER)
     }
 
     #stopAnimationMove() {

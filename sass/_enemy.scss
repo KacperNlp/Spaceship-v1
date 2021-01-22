@@ -12,6 +12,7 @@
     height: $shipSize;
     background-image: url("../assets/red-explosion-small/explosion.png");
     animation: explosionOfSmallShip $explosionAnimationTimer steps(17) forwards;
+    position: absolute;
   }
 }
 
@@ -51,6 +52,7 @@
     height: $hugeShipSize;
     background-image: url("../assets/red-explosion-huge/explosion.png");
     animation: explosionOfHugeShip $explosionAnimationTimer steps(17) forwards;
+    position: absolute;
   }
 }
 
