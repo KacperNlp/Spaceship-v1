@@ -95,12 +95,11 @@ export class PlayerShip extends BindToHtml{
     #shot() {
         const {offsetTop, offsetLeft} = this.ship;
 
-        const posX = offsetLeft + MISSILE_WIDTH/2;
+        const posX = offsetLeft + SHIP_SIZE/2 - MISSILE_WIDTH;
         const posY = offsetTop - MISSILE_HEIGHT;
 
-        const missile = new Missile(posX, posY);
+        const missile = new Missile(posX, posY, this.gameContainer);
 
-        this.gameContainer.appendChild(missile.renderMissile())
         this.missiles.push(missile)
     }
 }
