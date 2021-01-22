@@ -4,6 +4,8 @@
   background-image: url("../assets/enemies/enemy-small-ship.png");
   animation: enemyShipMove $shipsAnimationTime steps(5) infinite;
   transform: rotate(180deg);
+  position: absolute;
+  z-index: 5;
 
   &--explosion {
     width: $shipSize;
@@ -41,6 +43,8 @@
   background-image: url("../assets/enemies/enemy-huge-ship.png");
   animation: hugeEnemyShipMove $shipsAnimationTime steps(8) infinite;
   transform: rotate(180deg);
+  position: absolute;
+  z-index: 2;
 
   &--explosion {
     width: $hugeShipSize;

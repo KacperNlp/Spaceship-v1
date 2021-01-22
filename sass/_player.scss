@@ -4,6 +4,7 @@
   height: $shipSize;
   background-image: url("../assets/player-ship/player.png");
   animation: playerShipMove $shipsAnimationTime steps(8) infinite;
+  z-index: 10;
 }
 
 @keyframes playerShipMove {
