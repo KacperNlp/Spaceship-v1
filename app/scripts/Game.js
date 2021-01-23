@@ -4,7 +4,7 @@ import {MISSILE_HEIGHT, MISSILE_WIDTH} from './Missile.js';
 import {Enemy, TYPES_OF_ENEMIES, PROPORTION_TO_GET_SHIP_TYPE} from './Enemy.js';
 
 const GAME_CONTAINER_ID = 'game-container';
-const TIME_TO_GENERATE_NEW_ENEMY = 10000;
+const TIME_TO_GENERATE_NEW_ENEMY = 800;
 
 class Game extends BindToHtml{
     #playerShip;
@@ -25,7 +25,6 @@ class Game extends BindToHtml{
 
     #newGame = () =>{
         this.#checkPositions();
-
         window.requestAnimationFrame(this.#newGame)
     }
 
@@ -33,7 +32,7 @@ class Game extends BindToHtml{
         this.intervalToCreateEnemy = setInterval(this.#createNewEnemy, TIME_TO_GENERATE_NEW_ENEMY)
     }
 
-    #checkPositions(){
+    #checkPositions = () => {
         this.#checkEnemiesPositions();
     }
 
@@ -41,14 +40,17 @@ class Game extends BindToHtml{
         this.enemies.forEach((enemy, id, enemiesArray) =>{
             const { innerHeight } = window;
             const positionToDeleteEnemyShip = innerHeight + enemy.shipSize;
+            const {element} = enemy;
             const positions = {
-                bottomLeft: enemy.posX,
-                bottomRight: enemy.posX + enemy.shipSize,
+                top:element.offsetTop,
+                bottom:element.offsetTop + enemy.shipSize,
+                left:element.offsetLeft,
+                right:element.offsetLeft + enemy.shipSize,
             }
 
             if(enemy.posY > positionToDeleteEnemyShip){
                 enemy.deleteEnemy();
-                enemiesArray.slice(id, 1);
+                enemiesArray.splice(id, 1);
             }
 
             this.#checkMissilesPositions(enemy, positions, id);
@@ -56,23 +58,32 @@ class Game extends BindToHtml{
     }
 
     #checkMissilesPositions(enemy, positions, enemyId){
-        this.#playerShip.missiles.forEach((missile, id, missilesArray) =>{
+        this.#playerShip.missiles.forEach((missile, id, missilesArray) => {
             const positionToDeleteMissile = - (MISSILE_HEIGHT);
+            const {element} = missile;
             const missilePosition = {
-                topLeft: missile.posX,
-                topRight: missile.posX + MISSILE_WIDTH,
+                top:element.offsetTop,
+                bottom:element.offsetTop + MISSILE_HEIGHT,
+                left:element.offsetLeft,
+                right:element.offsetLeft + MISSILE_WIDTH,
             }
 
-            if(positions.bottomLeft <= missilePosition.topRight && positions.bottomRight >= missilePosition.topLeft && enemy.posY <= missile.posY && missile.posY <= enemy.posY + enemy.shipSize) {
-                enemy.shipExplosion();
-                this.enemies.slice(enemyId, 1);
+            const {top, left, bottom, right} = missilePosition;
+            
+            if(left <= positions.right && right >= positions.left && bottom <= positions.bottom && top >= positions.top) {
+                enemy.hp--;
+
+                if(!enemy.hp){
+                    enemy.shipExplosion();
+                    this.enemies.splice(enemyId, 1);
+                }
                 missile.deleteMissile();
-                missilesArray.slice(id, 1);
+                missilesArray.splice(id, 1);
             }
 
             if(missile.posY < positionToDeleteMissile) {
                 missile.deleteMissile();
-                missilesArray.slice(id, 1);
+                missilesArray.splice(id, 1);
             }
         })
     }
