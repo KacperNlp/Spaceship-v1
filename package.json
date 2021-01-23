@@ -1,0 +1,23 @@
+{
+  "name": "spacehipii",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "eslint": "^7.18.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KacperNlp/Spaceship-v1.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KacperNlp/Spaceship-v1/issues"
+  },
+  "homepage": "https://github.com/KacperNlp/Spaceship-v1#readme"
+}

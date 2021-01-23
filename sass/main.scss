@@ -18,6 +18,10 @@ html {
   width: 100%;
   position: relative;
   background: $siteBackground;
+
+  &.hit {
+    background: rgb(134, 4, 4);
+  }
 }
 
 @import "information";

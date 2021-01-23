@@ -1,118 +1,192 @@
-import {PlayerShip} from './PlayerShip.js';
-import {BindToHtml} from './BindToHtml.js';
-import {MISSILE_HEIGHT, MISSILE_WIDTH} from './Missile.js';
-import {Enemy, TYPES_OF_ENEMIES, PROPORTION_TO_GET_SHIP_TYPE} from './Enemy.js';
+import { PlayerShip } from "./PlayerShip.js";
+import { BindToHtml } from "./BindToHtml.js";
+import { MISSILE_HEIGHT, MISSILE_WIDTH } from "./Missile.js";
+import {
+  Enemy,
+  TYPES_OF_ENEMIES,
+  PROPORTION_TO_GET_SHIP_TYPE,
+} from "./Enemy.js";
+import { GameState } from "./GameState.js";
 
-const GAME_CONTAINER_ID = 'game-container';
-const TIME_TO_GENERATE_NEW_ENEMY = 800;
+const CLASS_FOR_SCREEN_WHEN_PLAYER_LOST_LIFE = "hit";
+const GAME_CONTAINER_ID = "game-container";
+const PLAYER_LIFES_CONTAINER_ID = "lives";
+const PLAYER_SCORE_CONTAINER_ID = "score";
+const TIME_FOR_BACKGROUND_OF_LOST_LIFE = 500;
 
-class Game extends BindToHtml{
-    #playerShip;
+class Game extends BindToHtml {
+  #playerShip;
+  #gameState;
 
-    constructor() {
-        super();
-        this.container = this.bindById(GAME_CONTAINER_ID);
-        this.intervalToCreateEnemy = null;
-        this.enemies = [];
-        this.#init();
-    }
+  constructor() {
+    super();
+    this.container = this.bindById(GAME_CONTAINER_ID);
+    this.enemies = [];
+    this.intervalToCreateEnemy = null;
+    this.lifesContainer = this.bindById(PLAYER_LIFES_CONTAINER_ID);
+    this.scoreContainer = this.bindById(PLAYER_SCORE_CONTAINER_ID);
 
-    #init() {
-        this.#playerShip = new PlayerShip(this.container);
-        this.#newGame();
-        this.#enemiesGenerator();
-    }
+    this.#init();
+  }
 
-    #newGame = () =>{
-        this.#checkPositions();
-        window.requestAnimationFrame(this.#newGame)
-    }
+  #init() {
+    this.#playerShip = new PlayerShip(this.container);
+    this.#gameState = new GameState();
+    this.#newGame();
+    this.#enemiesGenerator();
+  }
 
-    #enemiesGenerator() {
-        this.intervalToCreateEnemy = setInterval(this.#createNewEnemy, TIME_TO_GENERATE_NEW_ENEMY)
-    }
+  #newGame = () => {
+    this.#checkPositions();
+    this.#updatePlayerStats();
+    window.requestAnimationFrame(this.#newGame);
+  };
 
-    #checkPositions = () => {
-        this.#checkEnemiesPositions();
-    }
+  #enemiesGenerator() {
+    const timeToRender = this.#gameState.timeToRenderNewEnemy;
+    console.log(timeToRender);
 
-    #checkEnemiesPositions() {
-        this.enemies.forEach((enemy, id, enemiesArray) =>{
-            const { innerHeight } = window;
-            const positionToDeleteEnemyShip = innerHeight + enemy.shipSize;
-            const {element} = enemy;
-            const positions = {
-                top:element.offsetTop,
-                bottom:element.offsetTop + enemy.shipSize,
-                left:element.offsetLeft,
-                right:element.offsetLeft + enemy.shipSize,
-            }
+    this.intervalToCreateEnemy = setInterval(
+      this.#createNewEnemy,
+      timeToRender
+    );
+  }
 
-            if(enemy.posY > positionToDeleteEnemyShip){
-                enemy.deleteEnemy();
-                enemiesArray.splice(id, 1);
-            }
+  #checkPositions = () => {
+    this.#checkEnemiesPositions();
+  };
 
-            this.#checkMissilesPositions(enemy, positions, id);
-        })
-    }
+  #checkEnemiesPositions() {
+    this.enemies.forEach((enemy, id, enemiesArray) => {
+      const { innerHeight } = window;
+      const positionToDeleteEnemyShip = innerHeight + enemy.shipSize;
+      const { element } = enemy;
+      const positions = {
+        top: element.offsetTop,
+        bottom: element.offsetTop + enemy.shipSize,
+        left: element.offsetLeft,
+        right: element.offsetLeft + enemy.shipSize,
+      };
 
-    #checkMissilesPositions(enemy, positions, enemyId){
-        this.#playerShip.missiles.forEach((missile, id, missilesArray) => {
-            const positionToDeleteMissile = - (MISSILE_HEIGHT);
-            const {element} = missile;
-            const missilePosition = {
-                top:element.offsetTop,
-                bottom:element.offsetTop + MISSILE_HEIGHT,
-                left:element.offsetLeft,
-                right:element.offsetLeft + MISSILE_WIDTH,
-            }
+      //if enemy is outsite the map
+      if (enemy.posY > positionToDeleteEnemyShip) {
+        enemy.deleteEnemy();
+        enemiesArray.splice(id, 1);
+        this.#playerLostLife();
+      }
 
-            const {top, left, bottom, right} = missilePosition;
-            
-            if(left <= positions.right && right >= positions.left && bottom <= positions.bottom && top >= positions.top) {
-                enemy.hp--;
+      this.#checkMissilesPositions(enemy, positions, id);
+    });
+  }
 
-                if(!enemy.hp){
-                    enemy.shipExplosion();
-                    this.enemies.splice(enemyId, 1);
-                }
-                missile.deleteMissile();
-                missilesArray.splice(id, 1);
-            }
+  #checkMissilesPositions(enemy, positions, enemyId) {
+    this.#playerShip.missiles.forEach((missile, id, missilesArray) => {
+      const positionToDeleteMissile = -MISSILE_HEIGHT;
+      const { element } = missile;
+      const missilePosition = {
+        top: element.offsetTop,
+        bottom: element.offsetTop + MISSILE_HEIGHT,
+        left: element.offsetLeft,
+        right: element.offsetLeft + MISSILE_WIDTH,
+      };
 
-            if(missile.posY < positionToDeleteMissile) {
-                missile.deleteMissile();
-                missilesArray.splice(id, 1);
-            }
-        })
-    }
+      const { top, left, bottom, right } = missilePosition;
 
+      if (
+        left <= positions.right &&
+        right >= positions.left &&
+        bottom <= positions.bottom &&
+        top >= positions.top
+      ) {
+        enemy.hp--;
 
-
-    #createNewEnemy = () => {
-        const type = this.#takeType();
-        const enemy = new Enemy(type, this.container);
-        this.enemies.push(enemy);
-    }
-
-    #stopGenerateEnemies() {
-        clearInterval(this.intervalToCreateEnemy);
-    }
-
-    #takeType() {
-        const randomShip = Math.floor(Math.random() * PROPORTION_TO_GET_SHIP_TYPE + 1);
-        let type;
-
-        if(randomShip % PROPORTION_TO_GET_SHIP_TYPE){
-            type = TYPES_OF_ENEMIES.small;
-        }else{
-            type = TYPES_OF_ENEMIES.huge;
+        if (!enemy.hp) {
+          enemy.shipExplosion();
+          this.enemies.splice(enemyId, 1);
+          this.#increasePlayerScore(enemy.shipType);
         }
+        missile.deleteMissile();
+        missilesArray.splice(id, 1);
+      }
 
-        return type;
+      //if missile is outsite the map
+      if (missile.posY < positionToDeleteMissile) {
+        missile.deleteMissile();
+        missilesArray.splice(id, 1);
+      }
+    });
+  }
+
+  #createNewEnemy = () => {
+    const type = this.#takeType();
+    const enemy = new Enemy(type, this.container);
+    this.enemies.push(enemy);
+  };
+
+  #stopGenerateEnemies() {
+    clearInterval(this.intervalToCreateEnemy);
+  }
+
+  #takeType() {
+    const randomShip = Math.floor(
+      Math.random() * PROPORTION_TO_GET_SHIP_TYPE + 1
+    );
+    let type;
+
+    if (randomShip % PROPORTION_TO_GET_SHIP_TYPE) {
+      type = TYPES_OF_ENEMIES.small;
+    } else {
+      type = TYPES_OF_ENEMIES.huge;
     }
 
+    return type;
+  }
+
+  #playerLostLife() {
+    this.#gameState.decreasePlayerLifes();
+    this.#changeScreenBackground();
+
+    if (!this.#gameState.playerLifes) {
+      this.#stopGenerateEnemies();
+    }
+  }
+
+  #increasePlayerScore(enemyType) {
+    const { huge } = TYPES_OF_ENEMIES;
+    let score;
+
+    if (enemyType === huge.shipType) {
+      score = 3;
+    } else {
+      score = 1;
+    }
+
+    this.#increaseGameDifficulty();
+    this.#gameState.increaseScore(score);
+  }
+
+  #updatePlayerStats() {
+    this.scoreContainer.textContent = this.#gameState.score;
+    this.lifesContainer.textContent = this.#gameState.playerLifes;
+  }
+  #changeScreenBackground() {
+    this.container.classList.add(CLASS_FOR_SCREEN_WHEN_PLAYER_LOST_LIFE);
+    setTimeout(() => {
+      this.container.classList.remove(CLASS_FOR_SCREEN_WHEN_PLAYER_LOST_LIFE);
+    }, TIME_FOR_BACKGROUND_OF_LOST_LIFE);
+  }
+
+  #increaseGameDifficulty() {
+    const score = this.#gameState.score;
+    const requiredScore = this.#gameState.requiredScoreToIncreaseDifficulty;
+    const time = this.#gameState.timeToRenderNewEnemy;
+
+    if (score > requiredScore && time > 400) {
+      this.#stopGenerateEnemies();
+      this.#gameState.decreaseTimeToRenderEnemy();
+      this.#enemiesGenerator();
+    }
+  }
 }
 
 export const game = new Game();
