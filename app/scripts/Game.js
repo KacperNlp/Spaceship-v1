@@ -9,7 +9,11 @@ import {
 import { GameState } from "./GameState.js";
 
 const CLASS_FOR_SCREEN_WHEN_PLAYER_LOST_LIFE = "hit";
+const CLASS_TO_HIDDEN_LAYER = "hidden";
+const CONTAINER_FOR_SCORE_AT_END_OF_GAME = "score-at-end-of-game";
 const GAME_CONTAINER_ID = "game-container";
+const MODAL_LAYER_ID = "modal";
+const NEW_GAME_BUTTON_ID = "button-new-game";
 const PLAYER_LIFES_CONTAINER_ID = "lives";
 const PLAYER_SCORE_CONTAINER_ID = "score";
 const TIME_FOR_BACKGROUND_OF_LOST_LIFE = 500;
@@ -118,7 +122,7 @@ class Game extends BindToHtml {
   }
 
   #createNewEnemy = () => {
-    const type = this.#takeType();
+    const type = this.#takeTypeOfEnemy();
     const enemy = new Enemy(type, this.container);
     this.enemies.push(enemy);
   };
@@ -127,7 +131,7 @@ class Game extends BindToHtml {
     clearInterval(this.intervalToCreateEnemy);
   }
 
-  #takeType() {
+  #takeTypeOfEnemy() {
     const randomShip = Math.floor(
       Math.random() * PROPORTION_TO_GET_SHIP_TYPE + 1
     );
@@ -147,7 +151,7 @@ class Game extends BindToHtml {
     this.#changeScreenBackground();
 
     if (!this.#gameState.playerLifes) {
-      this.#stopGenerateEnemies();
+      this.#endOfGame();
     }
   }
 
@@ -186,6 +190,33 @@ class Game extends BindToHtml {
       this.#gameState.decreaseTimeToRenderEnemy();
       this.#enemiesGenerator();
     }
+  }
+
+  #endOfGame() {
+    this.#clearArraysOfMissilesAndEnemies();
+    this.#stopGenerateEnemies();
+    this.#handleOfModalLayer();
+  }
+
+  #clearArraysOfMissilesAndEnemies() {
+    this.enemies.forEach((enemy) => enemy.shipExplosion());
+    this.#playerShip.missiles.forEach((missile) => missile.deleteMissile());
+    this.enemies.length = 0;
+    this.#playerShip.missiles.length = 0;
+  }
+
+  #handleOfModalLayer() {
+    const modalLayer = this.bindById(MODAL_LAYER_ID);
+    const scoreContainer = this.bindById(CONTAINER_FOR_SCORE_AT_END_OF_GAME);
+    const button = this.bindById(NEW_GAME_BUTTON_ID);
+
+    modalLayer.classList.remove(CLASS_TO_HIDDEN_LAYER);
+    scoreContainer.textContent = this.#gameState.score;
+
+    button.addEventListener("click", () => {
+      modalLayer.classList.add(CLASS_TO_HIDDEN_LAYER);
+      this.#init();
+    });
   }
 }
 
