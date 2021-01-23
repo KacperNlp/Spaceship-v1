@@ -3,7 +3,7 @@ Game created as task from course on Udemy, for OPP learning in JS.
 <br/>
 
 ## About game
-In this game player have 3 lives and every time when enemy ship will pass through player ship, then player will lost one life (screen will change background for 500ms).
+In this game player has 3 lives and every time when enemy ship will pass through player ship, then player will lost one life (screen will change background for 500ms).
 <br/>
 Type of enemies:
 * normal - player must hit this ship only one time to destroy it,
